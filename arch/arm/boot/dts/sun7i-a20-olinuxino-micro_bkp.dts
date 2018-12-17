@@ -57,7 +57,7 @@
 	aliases {
 		serial0 = &uart0;
 		serial1 = &uart6;
-		serial4 = &uart7;
+		serial2 = &uart7;
 		spi0 = &spi1;
 		spi1 = &spi2;
 	};
@@ -88,14 +88,7 @@
 			default-state = "on";
 		};
 	};
-
-	mmc2_pwrseq: pwrseq {
-		compatible = "mmc-pwrseq-emmc";
-		reset-gpios = <&pio 2 16 GPIO_ACTIVE_LOW>;
-	};
-
 };
-
 
 &ahci {
 	target-supply = <&reg_ahci_5v>;
@@ -289,31 +282,6 @@
 		function = "gpio_in";
 		bias-pull-down;
 	};
-
-
-lcd_enable_pin: lcd_enable_pin@0 {
-		allwinner,pins = "PH8";
-		allwinner,function = "gpio_out";
-		//allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-		//allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-		bias-pull-up;
-		drive-strength = <10>;
-	};
-
-lcd_rgb888_pins: lcd_rgb888_pins@0 {
-		allwinner,pins = "PD0", "PD1", "PD2", "PD3", "PD4", "PD5",
-		                 "PD6", "PD7", "PD8", "PD9", "PD10", "PD11",
-		                 "PD12", "PD13", "PD14", "PD15", "PD16",
-		                 "PD17", "PD18", "PD19", "PD20", "PD21",
-		                 "PD22", "PD23", "PD24", "PD25", "PD26",
-		                 "PD27";
-		allwinner,function = "lcd0";
-		//allwinner,drive = <SUN4I_PINCTRL_10_MA>;
-		//allwinner,pull = <SUN4I_PINCTRL_NO_PULL>;
-
-		bias-pull-up;
-		drive-strength = <10>;
-	};
 };
 
 #include "axp209.dtsi"
@@ -414,39 +382,3 @@ lcd_rgb888_pins: lcd_rgb888_pins@0 {
 	usb2_vbus-supply = <&reg_usb2_vbus>;
 	status = "okay";
 };
-
-
-&pwm {
-      pinctrl-names = "default";
-      pinctrl-0 = <&pwm0_pins_a>, <&pwm1_pins_a>;
-      status = "okay";
-};
-
-
-&rtp {
-	
-		allwinner,ts-attached;
-		#thermal-sensor-cells = <0>;
-		/* sensitive/noisy touch panel */
-		allwinner,tp-sensitive-adjust = <0>;
-		allwinner,filter-type = <3>;
-};
-
-
-
-&mmc2 {
-	pinctrl-names = "default";
-	pinctrl-0 = <&mmc2_pins_a>;
-	vmmc-supply = <&reg_vcc3v3>;
-	bus-width = <4>;
-	non-removable;
-	mmc-pwrseq = <&mmc2_pwrseq>;
-	status = "okay";
-
-	emmc: emmc@0 {
-		reg = <0>;
-		compatible = "mmc-card";
-		broken-hpi;
-	};
-};
-

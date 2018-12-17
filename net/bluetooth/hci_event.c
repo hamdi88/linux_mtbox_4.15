@@ -1975,6 +1975,8 @@ static void hci_cs_le_read_remote_features(struct hci_dev *hdev, u8 status)
 	hci_dev_unlock(hdev);
 }
 
+
+
 static void hci_cs_le_start_enc(struct hci_dev *hdev, u8 status)
 {
 	struct hci_cp_le_start_enc *cp;
@@ -4569,7 +4571,7 @@ static void hci_le_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
 
 	conn->sec_level = BT_SECURITY_LOW;
 	conn->handle = __le16_to_cpu(ev->handle);
-	conn->state = BT_CONFIG;
+	conn->state = BT_CONNECTED;
 
 	conn->le_conn_interval = le16_to_cpu(ev->interval);
 	conn->le_conn_latency = le16_to_cpu(ev->latency);
@@ -4578,33 +4580,7 @@ static void hci_le_conn_complete_evt(struct hci_dev *hdev, struct sk_buff *skb)
 	hci_debugfs_create_conn(conn);
 	hci_conn_add_sysfs(conn);
 
-	if (!ev->status) {
-		/* The remote features procedure is defined for master
-		 * role only. So only in case of an initiated connection
-		 * request the remote features.
-		 *
-		 * If the local controller supports slave-initiated features
-		 * exchange, then requesting the remote features in slave
-		 * role is possible. Otherwise just transition into the
-		 * connected state without requesting the remote features.
-		 */
-		if (conn->out ||
-		    (hdev->le_features[0] & HCI_LE_SLAVE_FEATURES)) {
-			struct hci_cp_le_read_remote_features cp;
-
-			cp.handle = __cpu_to_le16(conn->handle);
-
-			hci_send_cmd(hdev, HCI_OP_LE_READ_REMOTE_FEATURES,
-				     sizeof(cp), &cp);
-
-			hci_conn_hold(conn);
-		} else {
-			conn->state = BT_CONNECTED;
-			hci_connect_cfm(conn, ev->status);
-		}
-	} else {
-		hci_connect_cfm(conn, ev->status);
-	}
+	hci_connect_cfm(conn, ev->status);
 
 	params = hci_pend_le_action_lookup(&hdev->pend_le_conns, &conn->dst,
 					   conn->dst_type);
@@ -4988,6 +4964,8 @@ static void hci_le_remote_feat_complete_evt(struct hci_dev *hdev,
 	hci_dev_unlock(hdev);
 }
 
+
+
 static void hci_le_ltk_request_evt(struct hci_dev *hdev, struct sk_buff *skb)
 {
 	struct hci_ev_le_ltk_req *ev = (void *) skb->data;
@@ -5166,6 +5144,7 @@ static void hci_le_meta_evt(struct hci_dev *hdev, struct sk_buff *skb)
 		hci_le_remote_feat_complete_evt(hdev, skb);
 		break;
 
+
 	case HCI_EV_LE_LTK_REQ:
 		hci_le_ltk_request_evt(hdev, skb);
 		break;
@@ -5207,8 +5186,7 @@ static bool hci_get_cmd_complete(struct hci_dev *hdev, u16 opcode,
 	}
 
 	if (hdr->evt != HCI_EV_CMD_COMPLETE) {
-		bt_dev_err(hdev, "last event is not cmd complete (0x%2.2x)",
-			   hdr->evt);
+		BT_DBG("last event is not cmd complete (0x%2.2x)", hdr->evt);
 		return false;
 	}
 

@@ -174,6 +174,8 @@ static const struct usb_device_id btusb_table[] = {
 	{ USB_DEVICE(0x8087, 0x0a5a),
 	  .driver_info = BTUSB_INTEL_BOOT | BTUSB_BROKEN_ISOC },
 
+	{ USB_DEVICE(0x0a12, 0x0001), .driver_info = BTUSB_CSR },
+
 	{ }	/* Terminating entry */
 };
 
@@ -181,7 +183,7 @@ MODULE_DEVICE_TABLE(usb, btusb_table);
 
 static const struct usb_device_id blacklist_table[] = {
 	/* CSR BlueCore devices */
-	{ USB_DEVICE(0x0a12, 0x0001), .driver_info = BTUSB_CSR },
+//	{ USB_DEVICE(0x0a12, 0x0001), .driver_info = BTUSB_CSR },
 
 	/* Broadcom BCM2033 without firmware */
 	{ USB_DEVICE(0x0a5c, 0x2033), .driver_info = BTUSB_IGNORE },
