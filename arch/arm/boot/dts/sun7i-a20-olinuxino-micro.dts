@@ -395,6 +395,11 @@ lcd_rgb888_pins: lcd_rgb888_pins@0 {
 	status = "okay";
 };
 
+&uart2 {
+	pinctrl-names = "default";
+	pinctrl-0 = <&uart2_pins_a>;
+	status = "okay";
+};
 &usb_otg {
 	dr_mode = "otg";
 	status = "okay";
